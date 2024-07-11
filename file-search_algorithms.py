@@ -3,10 +3,12 @@ import random
 import string
 import os
 
-# Define the search algorithms
+# Implement the file-search_algorithms logic
+# Naïve String Matching Algorithm
 def naive_search(data, query):
     return [line.strip() for line in data if line.strip() == query]
 
+# Binary_search Algorithm
 def binary_search(data, query):
     sorted_data = sorted(line.strip() for line in data)
     low, high = 0, len(sorted_data) - 1
@@ -20,6 +22,7 @@ def binary_search(data, query):
             high = mid - 1
     return []
 
+# Knuth-Morris-Pratt (KMP) Algorithm
 def kmp_search(data, query):
     def compute_lps(pattern):
         lps = [0] * len(pattern)
@@ -57,6 +60,7 @@ def kmp_search(data, query):
                     i += 1
     return results
 
+# Boyer-Moore Algorithm 
 def boyer_moore_search(data, query):
     def bad_char_table(pattern):
         table = {}
@@ -114,6 +118,7 @@ def boyer_moore_search(data, query):
                 i += max(good_suffix[len(query) - 1 - j], bad_char.get(line[i], len(query)))
     return results
 
+# Rabin-Karp Algorithm
 def rabin_karp_search(data, query):
     q = 101  # A prime number
     d = 256  # Number of characters in the input alphabet
@@ -142,6 +147,7 @@ def rabin_karp_search(data, query):
 
     return results
 
+# Z Algorithm 
 def z_algorithm_search(data, query):
     def calculate_z_array(s):
         z = [0] * len(s)
