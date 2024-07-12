@@ -54,16 +54,17 @@ class FileSearchServer:
     def handle_client(self, client_socket):
         # Handle client connections
         try:
-            if SSL_ENABLED:
+            if self.ssl_context:
                 with self.ssl_context.wrap_socket(client_socket, server_side=True) as ssl_socket:
                     self.process_request(ssl_socket)
             else:
                 self.process_request(client_socket)
         except ssl.SSLError as e:
             logger.error(f'SSL error: {e}')
-            client_socket.sendall('ERROR: SSL error'.encode('utf-8'))
+            # Handle SSL errors without interacting with the client socket
         except Exception as e:
             logger.error(f'Error handling client: {e}')
+            # Handle other exceptions without interacting with the client socket
         finally:
             client_socket.close()
 
