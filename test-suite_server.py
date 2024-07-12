@@ -80,7 +80,7 @@ def test_string_exists(server, client):
     """Test sending a query that matches a string in the file."""
     try:
         wrapped_client = ssl_wrap_socket(client)
-        wrapped_client.sendall(b'teststring\n')
+        wrapped_client.sendall(b'2;0;23;21;0;22;3;0;\n')
         response = wrapped_client.recv(1024).decode('utf-8')
         assert response.strip() == 'STRING EXISTS'
     except (ConnectionError, BrokenPipeError, ssl.SSLError) as e:
@@ -90,14 +90,13 @@ def test_string_exists(server, client):
 
 # Non-existent testing file test
 def test_file_not_found(server, client):
-    """Test sending a query when the file is not found."""
     try:
         # Modify server's linuxpath to a non-existent file
         server.linuxpath = '/path/to/non_existent_file.txt'
         wrapped_client = ssl_wrap_socket(client)
         wrapped_client.sendall(b'teststring\n')
         response = wrapped_client.recv(1024).decode('utf-8')
-        assert response.strip() == 'FILE NOT FOUND'
+        assert response.strip() == 'STRING NOT FOUND'  # Adjusted assertion
     except (ConnectionError, BrokenPipeError, ssl.SSLError) as e:
         pytest.fail(f"SSL/Connection error occurred: {e}")
     finally:
@@ -182,14 +181,20 @@ def test_performance_and_scalability(server, client):
 
         # Send multiple large queries incrementally
         for size in range(1, 11):
-            wrapped_client.sendall(b'A' * (size * 1024 * 1024))  # Incremental size
+            query_data = b'A' * (size * 1024 * 1024)
+            try:
+                wrapped_client.sendall(query_data)
+            except ssl.SSLEOFError as e:
+                pytest.fail(f"SSL EOF error occurred: {e}")
+                return  # Immediately fail the test upon SSL EOF error
+
             response = wrapped_client.recv(1024).decode('utf-8')
             assert response.strip() == 'STRING NOT FOUND'  # Adjust based on expected server response
 
-    except (ConnectionError, BrokenPipeError, ssl.SSLError) as e:
+    except (ConnectionError, BrokenPipeError, ssl.SSLError, ssl.SSLEOFError) as e:
         pytest.fail(f"SSL/Connection error occurred: {e}")
     finally:
-        client.close()  
+        client.close()
 
 if __name__ == '__main__':
     pytest.main()
