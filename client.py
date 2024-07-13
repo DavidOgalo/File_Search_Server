@@ -40,7 +40,7 @@ class FileSearchClient:
             return 'ERROR: Empty query'
         try:
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                  
+
             if self.ssl_enabled:
                 with self.ssl_context.wrap_socket(client_socket, server_hostname=self.host) as ssl_socket:
                     ssl_socket.connect((self.host, self.port))

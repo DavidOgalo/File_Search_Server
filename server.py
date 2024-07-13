@@ -13,17 +13,10 @@ linuxpath = config.get('Settings', 'linuxpath', fallback='./200k.txt')
 reread_on_query = config.getboolean('Settings', 'REREAD_ON_QUERY', fallback=True)
 
 # Get server host and port from the configuration
-HOST = 'localhost'  # Default value for the server host
-PORT = 12345  # Default value for the server port
-SSL_ENABLED = True  # Default value to enable SSL
-BUFFER_SIZE = 1024  # Default buffer size
-
-# Check if 'Server' section exists in the config file
-if 'Server' in config:
-    HOST = config.get('Server', 'host', fallback=HOST)
-    PORT = config.getint('Server', 'port', fallback=PORT)
-    SSL_ENABLED = config.getboolean('Server', 'ssl_enabled', fallback=SSL_ENABLED)
-    BUFFER_SIZE = config.getint('Server', 'buffer_size', fallback=BUFFER_SIZE)
+HOST = config.get('Server', 'host', fallback='localhost')
+PORT = config.getint('Server', 'port', fallback=12345)
+SSL_ENABLED = config.getboolean('Server', 'ssl_enabled', fallback=True)
+BUFFER_SIZE = config.getint('Server', 'buffer_size', fallback=1024)
 
 # Set up logging to track server activity
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -61,31 +54,29 @@ class FileSearchServer:
                 self.process_request(client_socket)
         except ssl.SSLError as e:
             logger.error(f'SSL error: {e}')
-            # Handle SSL errors without interacting with the client socket
         except Exception as e:
             logger.error(f'Error handling client: {e}')
-            # Handle other exceptions without interacting with the client socket
         finally:
             client_socket.close()
 
-    def process_request(self, socket):
+    def process_request(self, client_socket):
         try:
-            data = socket.recv(BUFFER_SIZE).decode('utf-8')
+            data = client_socket.recv(BUFFER_SIZE).decode('utf-8')
             logger.info(f'Received query: {data}')
-            
+
             if len(data) > BUFFER_SIZE:
-                socket.sendall('ERROR: Payload too large'.encode('utf-8'))
+                client_socket.sendall('ERROR: Payload too large'.encode('utf-8'))
                 return
 
             if not data.strip():  # Check for empty query
-                socket.sendall('ERROR: Empty query'.encode('utf-8'))
+                client_socket.sendall('ERROR: Empty query'.encode('utf-8'))
                 return
 
             response = self.process_query(data)
-            socket.sendall(response.encode('utf-8'))
+            client_socket.sendall(response.encode('utf-8'))
         except Exception as e:
             logger.error(f'Error processing request: {e}')
-            socket.sendall('ERROR: Internal server error'.encode('utf-8'))
+            client_socket.sendall('ERROR: Internal server error'.encode('utf-8'))
 
     def process_query(self, query):
         try:

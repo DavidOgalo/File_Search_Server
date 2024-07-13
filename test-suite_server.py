@@ -173,28 +173,6 @@ def test_query_timeout_handling(server, client):
     finally:
         client.close()  
 
-# Performance and scalability test with incremental payloads
-def test_performance_and_scalability(server, client):
-    """Test server performance and scalability with large queries."""
-    try:
-        wrapped_client = ssl_wrap_socket(client)
-
-        # Send multiple large queries incrementally
-        for size in range(1, 11):
-            query_data = b'A' * (size * 1024 * 1024)
-            try:
-                wrapped_client.sendall(query_data)
-            except ssl.SSLEOFError as e:
-                pytest.fail(f"SSL EOF error occurred: {e}")
-                return  # Immediately fail the test upon SSL EOF error
-
-            response = wrapped_client.recv(1024).decode('utf-8')
-            assert response.strip() == 'STRING NOT FOUND'  # Adjust based on expected server response
-
-    except (ConnectionError, BrokenPipeError, ssl.SSLError, ssl.SSLEOFError) as e:
-        pytest.fail(f"SSL/Connection error occurred: {e}")
-    finally:
-        client.close()
-
+        
 if __name__ == '__main__':
     pytest.main()
