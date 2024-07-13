@@ -7,7 +7,6 @@ def parse_benchmark_results(file_path):
     # Skip the header lines
     lines = lines[2:]
 
-    # Prepare data structure
     results = {}
 
     for line in lines:
@@ -39,8 +38,6 @@ def plot_results(results):
     plt.savefig('benchmark_chart.png')
     plt.show()
 
-# Parse the benchmark results
-benchmark_results = parse_benchmark_results('benchmark_results.txt')
-
-# Plot the results
-plot_results(benchmark_results)
+if __name__ == "__main__":
+    benchmark_results = parse_benchmark_results('benchmark_results.txt')
+    plot_results(benchmark_results)

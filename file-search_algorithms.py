@@ -3,12 +3,13 @@ import random
 import string
 import os
 
-# Implement the file-search_algorithms logic
+
+# Implement the file-search_algorithms logic 
 # Naïve String Matching Algorithm
 def naive_search(data, query):
     return [line.strip() for line in data if line.strip() == query]
 
-# Binary_search Algorithm
+# Binary Search Algorithm
 def binary_search(data, query):
     sorted_data = sorted(line.strip() for line in data)
     low, high = 0, len(sorted_data) - 1
@@ -45,7 +46,7 @@ def kmp_search(data, query):
     lps = compute_lps(query)
     for line in data:
         line = line.strip()
-        i = j = 0
+        i, j = 0, 0
         while i < len(line):
             if query[j] == line[i]:
                 i += 1
@@ -128,7 +129,8 @@ def rabin_karp_search(data, query):
     results = []
 
     for line in data:
-        n = len(line.strip())
+        line = line.strip()
+        n = len(line)
         if n < m:  # Skip lines shorter than the query
             continue
         t = 0
@@ -206,9 +208,9 @@ def benchmark_search_algorithms():
         with open(filename, 'r') as file:
             data = file.readlines()
         
+        query = ''.join(random.choices(string.ascii_letters + string.digits, k=20))
         for algorithm_name, algorithm_func in algorithms.items():
             start_time = time.time()
-            query = ''.join(random.choices(string.ascii_letters + string.digits, k=20))
             algorithm_func(data, query)
             end_time = time.time()
             execution_time = end_time - start_time
@@ -224,7 +226,7 @@ if __name__ == "__main__":
     benchmark_results = benchmark_search_algorithms()
     # Save results to a file for the speed report 
     with open('benchmark_results.txt', 'w') as f:
-        # Write the header 
+        # Write the header
         f.write(f"{'Algorithm':<20} {'File Size':<15} {'Execution Time (s)':<20}\n")
         f.write("="*55 + "\n")
         for result in benchmark_results:
