@@ -164,18 +164,18 @@ The following file search algorithms are implemented in this project:
 ### Benchmarking Search Algorithms
 
 To benchmark the search algorithms, run the `file-search_algorithms.py` script:
-
+```python
 python file-search_algorithms.py
-
+```
 
 This script will benchmark each algorithm on the generated test files and save the results to `benchmark_results.txt`.
 
 ### Generating the Speed Report
 
 Once you have the benchmark results, generate the speed report by running the `speed_report.py` script:
-
+```python
 python speed_report.py
-
+```
 
 This will create a visual representation of the benchmark results and save it as `benchmark_chart.png`.
 
