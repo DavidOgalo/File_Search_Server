@@ -74,7 +74,7 @@ def test_string_exists(server, client):
     """Test sending a query that matches a string in the file."""
     try:
         wrapped_client = ssl_wrap_socket(client)
-        wrapped_client.sendall(b'teststring\n')
+        wrapped_client.sendall(b'6;0;1;26;0;7;3;0;\n')
         response = wrapped_client.recv(1024).decode('utf-8')
         assert response.strip() == 'STRING EXISTS'
     except (ConnectionError, BrokenPipeError, ssl.SSLError) as e:
