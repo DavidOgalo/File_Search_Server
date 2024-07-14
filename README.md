@@ -9,11 +9,14 @@ The `AS_IntroductoryTask` is a project designed to implement and benchmark vario
 - [Overview](#overview)
 - [Project Structure](#project-structure)
 - [Setup Instructions](#setup-instructions)
+- [Usage Instructions](#usage-instructions)
+- [Running as a Linux Service](#running-as-a-linux-service)
 - [Implemented Algorithms](#implemented-algorithms)
 - [Running the Benchmarks](#running-the-benchmarks)
 - [Analyzing the Results](#analyzing-the-results)
 - [Limitations and Recommendations](#limitations-and-recommendations)
 - [Future Enhancements](#future-enhancements)
+- [Conclusion](#conclusion)
 
 ## Project Structure
 
@@ -56,9 +59,86 @@ Ensure you have the following installed on your machine:
 
    pip install -r requirements.txt
    
+## Usage Instructions 
+Running the Server
+
+To start the server, run:
+```python
+python server.py
+```
+Running the Client
+
+To interact with the server, run:
+```python
+python client.py
+```
+## Running as a Linux Service
+
+To run the AS_IntroductoryTask as a Linux daemon or service, follow these steps:
+
+1. Create a systemd service file:
+```sh
+sudo nano /etc/systemd/system/as_introductorytask.service
+ ```
+
+2. Add the following content to the service file:
+```sh
+[Unit]
+Description=AS Introductory Task File Search Server
+After=network.target
+
+[Service]
+User=yourusername
+WorkingDirectory=/path/to/AS_IntroductoryTask
+ExecStart=/usr/bin/python3 /path/to/AS_IntroductoryTask/server.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+ ```
+
+Replace /path/to/AS_IntroductoryTask with the actual path to the project directory and yourusername with your Linux username.
+
+3. Reload the systemd daemon to recognize the new service:
+ ```sh
+sudo systemctl daemon-reload
+ ```
+4. Start the service:
+ ```sh
+sudo systemctl start as_introductorytask.service
+ ```
+5. Enable the service to start on boot:
+ ```sh
+sudo systemctl enable as_introductorytask.service
+ ```
+6. Check the status of the service:
+ ```sh
+sudo systemctl status as_introductorytask.service
+ ```
+
+The AS_IntroductoryTask should now be running as a Linux service. 
+You can stop the service with 
+ ```sh
+sudo systemctl stop as_introductorytask.service
+ ```
+ and restart it with 
+  ```sh
+ sudo systemctl restart as_introductorytask.service
+ ```
+ 
+7. Querying the server:
+Navigate to the project directory where the client.py script is located:
+ ```sh
+cd /path/to/AS_IntroductoryTask
+ ```
+ 8. Run the client script:
+ ```sh
+python client.py
+ ``` 
+ 9. Enter the string you want to search for in the 200k.txt file
+
 
 ## Implemented Algorithms
-
 The following file search algorithms are implemented in this project:
 
 1. **Naive Search**:
@@ -140,6 +220,3 @@ From the generated chart, key observations include:
 ## Conclusion
 
 The `AS_IntroductoryTask` project provides an efficient solution for searching strings in large text files. By benchmarking various algorithms, we have identified the most suitable algorithm for different scenarios. The project offers a robust framework for further enhancements and optimizations.
-
-
-This README provides a comprehensive guide to understanding, setting up, and running the `AS_IntroductoryTask` project, ensuring that users can effectively utilize and extend its capabilities.
