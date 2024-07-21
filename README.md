@@ -11,6 +11,7 @@ The `AS_IntroductoryTask` is a project designed to implement and benchmark vario
 - [Setup Instructions](#setup-instructions)
 - [Usage Instructions](#usage-instructions)
 - [Running as a Linux Service](#running-as-a-linux-service)
+- [Unit Testing](#unit-testing)
 - [Implemented Algorithms](#implemented-algorithms)
 - [Running the Benchmarks](#running-the-benchmarks)
 - [Analyzing the Results](#analyzing-the-results)
@@ -117,6 +118,7 @@ sudo systemctl status as_introductorytask.service
  ```
 
 The AS_IntroductoryTask should now be running as a Linux service. 
+
 You can stop the service with 
  ```sh
 sudo systemctl stop as_introductorytask.service
@@ -136,6 +138,16 @@ cd /path/to/AS_IntroductoryTask
 python client.py
  ``` 
  9. Enter the string you want to search for in the 200k.txt file
+
+
+## Unit Testing
+### Running the test suite server
+
+Run the test suite server script to run all the unit test cases:
+```sh
+pytest -vv test-suite_server.py
+```
+This will run all the test cases and give you a summary of the test session results.
 
 
 ## Implemented Algorithms
@@ -164,7 +176,7 @@ The following file search algorithms are implemented in this project:
 ### Benchmarking Search Algorithms
 
 To benchmark the search algorithms, run the `file-search_algorithms.py` script:
-```python
+```sh
 python file-search_algorithms.py
 ```
 
@@ -173,7 +185,7 @@ This script will benchmark each algorithm on the generated test files and save t
 ### Generating the Speed Report
 
 Once you have the benchmark results, generate the speed report by running the `speed_report.py` script:
-```python
+```sh
 python speed_report.py
 ```
 
