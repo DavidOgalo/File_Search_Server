@@ -1,13 +1,23 @@
 import matplotlib.pyplot as plt
+from typing import Dict, List, Tuple
 
-def parse_benchmark_results(file_path):
+def parse_benchmark_results(file_path: str) -> Dict[str, List[Tuple[int, float]]]:
+    """
+    Parse benchmark results from a file.
+
+    Args:
+        file_path: Path to the benchmark results file.
+
+    Returns:
+        A dictionary where keys are algorithm names and values are lists of tuples (file_size, execution_time).
+    """
     with open(file_path, 'r') as f:
         lines = f.readlines()
 
     # Skip the header lines
     lines = lines[2:]
 
-    results = {}
+    results: Dict[str, List[Tuple[int, float]]] = {}
 
     for line in lines:
         parts = line.strip().split()
@@ -22,7 +32,13 @@ def parse_benchmark_results(file_path):
 
     return results
 
-def plot_results(results):
+def plot_results(results: Dict[str, List[Tuple[int, float]]]) -> None:
+    """
+    Plot the benchmark results.
+
+    Args:
+        results: A dictionary where keys are algorithm names and values are lists of tuples (file_size, execution_time).
+    """
     plt.figure(figsize=(10, 6))
 
     for algorithm, data in results.items():

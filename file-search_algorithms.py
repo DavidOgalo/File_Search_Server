@@ -2,15 +2,34 @@ import time
 import random
 import string
 import os
+from typing import List, Callable, Tuple
 
 
-# Implement the file-search_algorithms logic 
-# Naïve String Matching Algorithm
-def naive_search(data, query):
+def naive_search(data: List[str], query: str) -> List[str]:
+    """
+    Naïve String Matching Algorithm.
+
+    Args:
+        data: A list of strings to search within.
+        query: The string to search for.
+
+    Returns:
+        A list of lines that exactly match the query.
+    """
     return [line.strip() for line in data if line.strip() == query]
 
-# Binary Search Algorithm
-def binary_search(data, query):
+
+def binary_search(data: List[str], query: str) -> List[str]:
+    """
+    Binary Search Algorithm.
+
+    Args:
+        data: A list of strings to search within.
+        query: The string to search for.
+
+    Returns:
+        A list containing the found query.
+    """
     sorted_data = sorted(line.strip() for line in data)
     low, high = 0, len(sorted_data) - 1
     while low <= high:
@@ -23,9 +42,19 @@ def binary_search(data, query):
             high = mid - 1
     return []
 
-# Knuth-Morris-Pratt (KMP) Algorithm
-def kmp_search(data, query):
-    def compute_lps(pattern):
+
+def kmp_search(data: List[str], query: str) -> List[str]:
+    """
+    Knuth-Morris-Pratt (KMP) Algorithm.
+
+    Args:
+        data: A list of strings to search within.
+        query: The string to search for.
+
+    Returns:
+        A list of lines that contain the query.
+    """
+    def compute_lps(pattern: str) -> List[int]:
         lps = [0] * len(pattern)
         length = 0
         i = 1
@@ -61,15 +90,25 @@ def kmp_search(data, query):
                     i += 1
     return results
 
-# Boyer-Moore Algorithm 
-def boyer_moore_search(data, query):
-    def bad_char_table(pattern):
+
+def boyer_moore_search(data: List[str], query: str) -> List[str]:
+    """
+    Boyer-Moore Algorithm.
+
+    Args:
+        data: A list of strings to search within.
+        query: The string to search for.
+
+    Returns:
+        A list of lines that contain the query.
+    """
+    def bad_char_table(pattern: str) -> dict:
         table = {}
         for i in range(len(pattern) - 1):
             table[pattern[i]] = len(pattern) - 1 - i
         return table
 
-    def good_suffix_table(pattern):
+    def good_suffix_table(pattern: str) -> List[int]:
         table = [0] * len(pattern)
         last_prefix = len(pattern)
         for i in range(len(pattern) - 1, -1, -1):
@@ -81,7 +120,7 @@ def boyer_moore_search(data, query):
             table[slen] = len(pattern) - 1 - i + slen
         return table
 
-    def is_prefix(pattern, p):
+    def is_prefix(pattern: str, p: int) -> bool:
         j = 0
         for i in range(p, len(pattern)):
             if pattern[i] != pattern[j]:
@@ -89,7 +128,7 @@ def boyer_moore_search(data, query):
             j += 1
         return True
 
-    def suffix_length(pattern, p):
+    def suffix_length(pattern: str, p: int) -> int:
         length = 0
         j = len(pattern) - 1
         for i in range(p, -1, -1):
@@ -119,12 +158,22 @@ def boyer_moore_search(data, query):
                 i += max(good_suffix[len(query) - 1 - j], bad_char.get(line[i], len(query)))
     return results
 
-# Rabin-Karp Algorithm
-def rabin_karp_search(data, query):
+
+def rabin_karp_search(data: List[str], query: str) -> List[str]:
+    """
+    Rabin-Karp Algorithm.
+
+    Args:
+        data: A list of strings to search within.
+        query: The string to search for.
+
+    Returns:
+        A list of lines that contain the query.
+    """
     q = 101  # A prime number
     d = 256  # Number of characters in the input alphabet
     m = len(query)
-    h = pow(d, m-1) % q
+    h = pow(d, m - 1) % q
     p = 0
     results = []
 
@@ -140,7 +189,7 @@ def rabin_karp_search(data, query):
 
         for i in range(n - m + 1):
             if p == t:
-                if line[i:i+m] == query:
+                if line[i:i + m] == query:
                     results.append(line)
             if i < n - m:
                 t = (d * (t - ord(line[i]) * h) + ord(line[i + m])) % q
@@ -149,9 +198,19 @@ def rabin_karp_search(data, query):
 
     return results
 
-# Z Algorithm 
-def z_algorithm_search(data, query):
-    def calculate_z_array(s):
+
+def z_algorithm_search(data: List[str], query: str) -> List[str]:
+    """
+    Z Algorithm.
+
+    Args:
+        data: A list of strings to search within.
+        query: The string to search for.
+
+    Returns:
+        A list of lines that contain the query.
+    """
+    def calculate_z_array(s: str) -> List[int]:
         z = [0] * len(s)
         l, r, k = 0, 0, 0
         for i in range(1, len(s)):
@@ -179,18 +238,34 @@ def z_algorithm_search(data, query):
     query_length = len(query)
     for i in range(query_length + 1, len(z_array)):
         if z_array[i] == query_length:
-            results.append(concat[i - query_length - 1: i - query_length - 1 + query_length])
+            results.append(concat[i - query_length - 1:i - query_length - 1 + query_length])
     return results
 
-# Helper function to generate test files of different sizes
-def generate_test_file(filename, num_lines):
+
+def generate_test_file(filename: str, num_lines: int) -> None:
+    """
+    Helper function to generate test files of different sizes.
+
+    Args:
+        filename: The name of the file to be created.
+        num_lines: The number of lines to write into the file.
+
+    Returns:
+        None
+    """
     with open(filename, 'w') as f:
         for _ in range(num_lines):
             line = ''.join(random.choices(string.ascii_letters + string.digits, k=20))
             f.write(line + '\n')
 
-# Benchmark different search algorithms on varying file sizes
-def benchmark_search_algorithms():
+
+def benchmark_search_algorithms() -> List[Tuple[str, int, float]]:
+    """
+    Benchmark different search algorithms on varying file sizes.
+
+    Returns:
+        A list of tuples containing the algorithm name, file size, and execution time.
+    """
     results = []
     algorithms = {
         'naive': naive_search,
@@ -207,7 +282,7 @@ def benchmark_search_algorithms():
         generate_test_file(filename, size)
         with open(filename, 'r') as file:
             data = file.readlines()
-        
+
         query = ''.join(random.choices(string.ascii_letters + string.digits, k=20))
         for algorithm_name, algorithm_func in algorithms.items():
             start_time = time.time()
@@ -221,13 +296,11 @@ def benchmark_search_algorithms():
 
     return results
 
-# Run the benchmark and save the results 
+
 if __name__ == "__main__":
     benchmark_results = benchmark_search_algorithms()
-    # Save results to a file for the speed report 
     with open('benchmark_results.txt', 'w') as f:
-        # Write the header
         f.write(f"{'Algorithm':<20} {'File Size':<15} {'Execution Time (s)':<20}\n")
-        f.write("="*55 + "\n")
+        f.write("=" * 55 + "\n")
         for result in benchmark_results:
             f.write(f"{result[0]:<20} {result[1]:<15} {result[2]:<20.4f}\n")

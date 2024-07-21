@@ -3,20 +3,26 @@ import ssl
 import time
 import threading
 import configparser
+from typing import Optional
 
+# Read configuration settings
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-HOST = config.get('Server', 'host', fallback='localhost')
-PORT = config.getint('Server', 'port', fallback=12345)
-SSL_ENABLED = config.getboolean('Server', 'ssl_enabled', fallback=True)
-NUM_CLIENTS = 50  # Number of clients to simulate
-QUERY_STRING = '11;0;23;11;0;20;5;0;'  # Example query string
-BUFFER_SIZE = 1024  # Buffer size for receiving data
-# Adjust QUERY_STRING and NUM_CLIENTS as needed for your specific testing scenario.
+HOST: str = config.get('Server', 'host', fallback='localhost')
+PORT: int = config.getint('Server', 'port', fallback=12345)
+SSL_ENABLED: bool = config.getboolean('Server', 'ssl_enabled', fallback=True)
+NUM_CLIENTS: int = 50  # Number of clients to simulate
+QUERY_STRING: str = '11;0;23;11;0;20;5;0;'  # Example query string
+BUFFER_SIZE: int = 1024  # Buffer size for receiving data
 
-def client_task(query):
-    """Task for each client thread to send a query to the server."""
+def client_task(query: str) -> None:
+    """
+    Task for each client thread to send a query to the server.
+
+    Args:
+        query: The query string to send to the server.
+    """
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -40,8 +46,10 @@ def client_task(query):
         client_socket.close()
 
 
-def test_performance():
-    """Run the performance test with multiple concurrent clients."""
+def test_performance() -> None:
+    """
+    Run the performance test with multiple concurrent clients.
+    """
     threads = []
     start_time = time.time()
 
@@ -57,6 +65,5 @@ def test_performance():
     print(f'Total execution time for {NUM_CLIENTS} clients: {end_time - start_time:.4f} seconds')
 
 
-# Main entry point
 if __name__ == '__main__':
     test_performance()

@@ -4,6 +4,9 @@
 sudo apt update
 sudo apt install -y python3 python3-pip git openssl
 
+# Install the required Python packages
+pip install -r requirements.txt
+
 # Download the data file
 echo "Downloading the data file..."
 wget -O 200k.txt "https://www.dropbox.com/scl/fi/ripx1gu2s5w48pklln75f/200k.txt?rlkey=j7l29szvqw0hlyyfhw4i4b1on&e=9&dl=0"
