@@ -4,7 +4,7 @@ import configparser
 import ssl
 import logging
 import time
-from typing import List
+from typing import List, Optional
 
 # Load configuration settings
 config = configparser.ConfigParser()
@@ -26,7 +26,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger()
 
-
 class FileSearchServer:
     def __init__(self, host: str = HOST, port: int = PORT):
         """
@@ -37,8 +36,8 @@ class FileSearchServer:
         """
         self.host = host
         self.port = port
-        self.server_socket = None
-        self.ssl_context = None
+        self.server_socket: Optional[socket.socket] = None
+        self.ssl_context: Optional[ssl.SSLContext] = None
 
     def setup_server(self) -> None:
         """Set up the server socket and SSL context if enabled."""
@@ -129,12 +128,16 @@ class FileSearchServer:
         self.setup_server()
         while True:
             try:
-                client_socket, client_address = self.server_socket.accept()
-                logger.info("Connection from %s", client_address)
-                client_thread = threading.Thread(
-                    target=self.handle_client, args=(client_socket,)
-                )
-                client_thread.start()
+                if self.server_socket is not None:  # Add a check to ensure server_socket is not None
+                    client_socket, client_address = self.server_socket.accept()
+                    logger.info("Connection from %s", client_address)
+                    client_thread = threading.Thread(
+                        target=self.handle_client, args=(client_socket,)
+                    )
+                    client_thread.start()
+                else:
+                    logger.error("Server socket is not initialized.")
+                    break
             except Exception as e:
                 logger.error("Error accepting connections: %s", e)
                 break

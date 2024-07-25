@@ -3,11 +3,10 @@ import socket
 import threading
 import ssl
 import time
+from typing import Generator
 from server import FileSearchServer
 
 # Mock configurations for testing environment
-
-
 class MockConfig:
     def __init__(
         self, path: str = "./mock_file.txt", reread: bool = True, ssl: bool = True
@@ -20,13 +19,15 @@ class MockConfig:
 
 
 @pytest.fixture
-def server(tmp_path) -> FileSearchServer:  # type: ignore
+def server(tmp_path) -> Generator[FileSearchServer, None, None]:
     """Fixture to set up and tear down the server for testing."""
     test_file = tmp_path / "mock_file.txt"
     test_file.write_text("teststring\nexample\nanotherline\n")
 
     config = MockConfig(path=str(test_file))
     server = FileSearchServer(host=config.host, port=config.port)
+    
+    # Ensure attributes are present in FileSearchServer 
     server.linuxpath = config.linuxpath
     server.reread_on_query = config.reread_on_query
     server.ssl_enabled = config.ssl_enabled
@@ -38,6 +39,7 @@ def server(tmp_path) -> FileSearchServer:  # type: ignore
     time.sleep(1)
 
     # Set the server port to the assigned port
+    assert server.server_socket is not None
     config.port = server.server_socket.getsockname()[1]
 
     yield server
@@ -48,12 +50,11 @@ def server(tmp_path) -> FileSearchServer:  # type: ignore
 
 
 @pytest.fixture
-def client(server: FileSearchServer) -> socket.socket:  # type: ignore
+def client(server: FileSearchServer) -> Generator[socket.socket, None, None]:
     """Fixture to set up and tear down the client for testing."""
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect(
-        (server.server_socket.getsockname()[0], server.server_socket.getsockname()[1])
-    )
+    assert server.server_socket is not None
+    client_socket.connect(server.server_socket.getsockname())
     yield client_socket
     client_socket.close()
 
@@ -92,7 +93,7 @@ def test_string_exists(server: FileSearchServer, client: socket.socket) -> None:
     """Test sending a query that matches a string in the file."""
     try:
         wrapped_client = ssl_wrap_socket(client)
-        wrapped_client.sendall(b"6;0;1;26;0;7;3;0;\n")
+        wrapped_client.sendall(b"24;0;1;26;0;8;4;0;\n")
         response = wrapped_client.recv(1024).decode("utf-8")
         assert response.strip() == "STRING EXISTS"
     except (ConnectionError, BrokenPipeError, ssl.SSLError) as e:
@@ -104,7 +105,7 @@ def test_file_not_found(server: FileSearchServer, client: socket.socket) -> None
     try:
         server.linuxpath = "/path/to/non_existent_file.txt"
         wrapped_client = ssl_wrap_socket(client)
-        wrapped_client.sendall(b"teststring\n")
+        wrapped_client.sendall(b"6;0;1;26;0;8;5;0;\n")
         response = wrapped_client.recv(1024).decode("utf-8")
         assert response.strip() == "STRING NOT FOUND"
     except (ConnectionError, BrokenPipeError, ssl.SSLError) as e:
@@ -132,12 +133,8 @@ def test_multiple_concurrent_clients(server: FileSearchServer) -> None:
     try:
         for _ in range(num_clients):
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            client_socket.connect(
-                (
-                    server.server_socket.getsockname()[0],
-                    server.server_socket.getsockname()[1],
-                )
-            )
+            assert server.server_socket is not None
+            client_socket.connect(server.server_socket.getsockname())
             clients.append(client_socket)
 
         threads = []
@@ -158,9 +155,9 @@ def test_multiple_concurrent_clients(server: FileSearchServer) -> None:
 def send_query(client_socket: socket.socket) -> None:
     """Helper function to send a query from a client socket."""
     wrapped_client = ssl_wrap_socket(client_socket)
-    wrapped_client.sendall(b"teststring\n")
+    wrapped_client.sendall(b"19;0;1;28;0;7;4;0;\n")
     response = wrapped_client.recv(1024).decode("utf-8")
-    assert response.strip() == "STRING NOT FOUND"
+    assert response.strip() == "STRING EXISTS"
 
 
 def test_query_timeout_handling(

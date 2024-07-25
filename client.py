@@ -34,15 +34,16 @@ class FileSearchClient:
         self.host = host
         self.port = port
         self.ssl_enabled = ssl_enabled
-        self.ssl_context = None
+        self.ssl_context: Optional[ssl.SSLContext] = None
 
     def setup_ssl(self) -> None:
         """Set up SSL context if SSL is enabled."""
         if self.ssl_enabled:
             self.ssl_context = ssl.create_default_context()
-            self.ssl_context.check_hostname = False
-            self.ssl_context.verify_mode = ssl.CERT_NONE
-            logger.info("SSL enabled: Using SSL for secure connections")
+            if self.ssl_context:  # Ensure ssl_context is not None
+                self.ssl_context.check_hostname = False
+                self.ssl_context.verify_mode = ssl.CERT_NONE
+                logger.info("SSL enabled: Using SSL for secure connections")
         else:
             logger.info("SSL not enabled: Using plain TCP connections")
 
@@ -59,7 +60,7 @@ class FileSearchClient:
 
         try:
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            if self.ssl_enabled:
+            if self.ssl_enabled and self.ssl_context:
                 with self.ssl_context.wrap_socket(
                     client_socket, server_hostname=self.host
                 ) as ssl_socket:
