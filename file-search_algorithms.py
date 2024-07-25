@@ -54,6 +54,7 @@ def kmp_search(data: List[str], query: str) -> List[str]:
     Returns:
         A list of lines that contain the query.
     """
+
     def compute_lps(pattern: str) -> List[int]:
         lps = [0] * len(pattern)
         length = 0
@@ -102,6 +103,7 @@ def boyer_moore_search(data: List[str], query: str) -> List[str]:
     Returns:
         A list of lines that contain the query.
     """
+
     def bad_char_table(pattern: str) -> dict:
         table = {}
         for i in range(len(pattern) - 1):
@@ -155,7 +157,9 @@ def boyer_moore_search(data: List[str], query: str) -> List[str]:
                 results.append(line)
                 i += len(query) + 1
             else:
-                i += max(good_suffix[len(query) - 1 - j], bad_char.get(line[i], len(query)))
+                i += max(
+                    good_suffix[len(query) - 1 - j], bad_char.get(line[i], len(query))
+                )
     return results
 
 
@@ -189,7 +193,7 @@ def rabin_karp_search(data: List[str], query: str) -> List[str]:
 
         for i in range(n - m + 1):
             if p == t:
-                if line[i:i + m] == query:
+                if line[i : i + m] == query:
                     results.append(line)
             if i < n - m:
                 t = (d * (t - ord(line[i]) * h) + ord(line[i + m])) % q
@@ -210,6 +214,7 @@ def z_algorithm_search(data: List[str], query: str) -> List[str]:
     Returns:
         A list of lines that contain the query.
     """
+
     def calculate_z_array(s: str) -> List[int]:
         z = [0] * len(s)
         l, r, k = 0, 0, 0
@@ -233,12 +238,14 @@ def z_algorithm_search(data: List[str], query: str) -> List[str]:
         return z
 
     results = []
-    concat = query + "$" + ''.join(data)
+    concat = query + "$" + "".join(data)
     z_array = calculate_z_array(concat)
     query_length = len(query)
     for i in range(query_length + 1, len(z_array)):
         if z_array[i] == query_length:
-            results.append(concat[i - query_length - 1:i - query_length - 1 + query_length])
+            results.append(
+                concat[i - query_length - 1 : i - query_length - 1 + query_length]
+            )
     return results
 
 
@@ -253,10 +260,10 @@ def generate_test_file(filename: str, num_lines: int) -> None:
     Returns:
         None
     """
-    with open(filename, 'w') as f:
+    with open(filename, "w") as f:
         for _ in range(num_lines):
-            line = ''.join(random.choices(string.ascii_letters + string.digits, k=20))
-            f.write(line + '\n')
+            line = "".join(random.choices(string.ascii_letters + string.digits, k=20))
+            f.write(line + "\n")
 
 
 def benchmark_search_algorithms() -> List[Tuple[str, int, float]]:
@@ -268,29 +275,31 @@ def benchmark_search_algorithms() -> List[Tuple[str, int, float]]:
     """
     results = []
     algorithms = {
-        'naive': naive_search,
-        'binary': binary_search,
-        'kmp': kmp_search,
-        'boyer_moore': boyer_moore_search,
-        'rabin_karp': rabin_karp_search,
-        'z_algorithm': z_algorithm_search,
+        "naive": naive_search,
+        "binary": binary_search,
+        "kmp": kmp_search,
+        "boyer_moore": boyer_moore_search,
+        "rabin_karp": rabin_karp_search,
+        "z_algorithm": z_algorithm_search,
     }
 
     file_sizes = [10000, 50000, 100000, 250000, 500000, 750000, 1000000]
     for size in file_sizes:
-        filename = f'test_file_{size}.txt'
+        filename = f"test_file_{size}.txt"
         generate_test_file(filename, size)
-        with open(filename, 'r') as file:
+        with open(filename, "r") as file:
             data = file.readlines()
 
-        query = ''.join(random.choices(string.ascii_letters + string.digits, k=20))
+        query = "".join(random.choices(string.ascii_letters + string.digits, k=20))
         for algorithm_name, algorithm_func in algorithms.items():
             start_time = time.time()
             algorithm_func(data, query)
             end_time = time.time()
             execution_time = end_time - start_time
             results.append((algorithm_name, size, execution_time))
-            print(f'Algorithm: {algorithm_name}, File Size: {size}, Execution Time: {execution_time:.4f}s')
+            print(
+                f"Algorithm: {algorithm_name}, File Size: {size}, Execution Time: {execution_time:.4f}s"
+            )
 
         os.remove(filename)
 
@@ -299,7 +308,7 @@ def benchmark_search_algorithms() -> List[Tuple[str, int, float]]:
 
 if __name__ == "__main__":
     benchmark_results = benchmark_search_algorithms()
-    with open('benchmark_results.txt', 'w') as f:
+    with open("benchmark_results.txt", "w") as f:
         f.write(f"{'Algorithm':<20} {'File Size':<15} {'Execution Time (s)':<20}\n")
         f.write("=" * 55 + "\n")
         for result in benchmark_results:
