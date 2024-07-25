@@ -105,7 +105,7 @@ def test_file_not_found(server: FileSearchServer, client: socket.socket) -> None
     try:
         server.linuxpath = "/path/to/non_existent_file.txt"
         wrapped_client = ssl_wrap_socket(client)
-        wrapped_client.sendall(b"6;0;1;26;0;8;5;0;\n")
+        wrapped_client.sendall(b"teststring\n")
         response = wrapped_client.recv(1024).decode("utf-8")
         assert response.strip() == "STRING NOT FOUND"
     except (ConnectionError, BrokenPipeError, ssl.SSLError) as e:
