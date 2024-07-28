@@ -2,7 +2,15 @@ import time
 import random
 import string
 import os
+import configparser
 from typing import List, Callable, Tuple
+
+# Read the configuration
+config = configparser.ConfigParser()
+config.read("config.ini")
+REREAD_ON_QUERY = config.getboolean("Settings", "REREAD_ON_QUERY")
+
+# Search algorithms
 
 
 def naive_search(data: List[str], query: str) -> List[str]:
@@ -249,6 +257,9 @@ def z_algorithm_search(data: List[str], query: str) -> List[str]:
     return results
 
 
+# Helper functions
+
+
 def generate_test_file(filename: str, num_lines: int) -> None:
     """
     Helper function to generate test files of different sizes.
@@ -266,7 +277,19 @@ def generate_test_file(filename: str, num_lines: int) -> None:
             f.write(line + "\n")
 
 
-def benchmark_search_algorithms() -> List[Tuple[str, int, float]]:
+def search(
+    data: List[str],
+    query: str,
+    algorithm: Callable[[List[str], str], List[str]],
+    reread: bool = False,
+) -> List[str]:
+    if reread:
+        with open(data, "r") as file:
+            data = file.readlines()
+    return algorithm(data, query)
+
+
+def benchmark_search_algorithms() -> List[Tuple[str, int, float, bool]]:
     """
     Benchmark different search algorithms on varying file sizes.
 
@@ -291,15 +314,17 @@ def benchmark_search_algorithms() -> List[Tuple[str, int, float]]:
             data = file.readlines()
 
         query = "".join(random.choices(string.ascii_letters + string.digits, k=20))
-        for algorithm_name, algorithm_func in algorithms.items():
-            start_time = time.time()
-            algorithm_func(data, query)
-            end_time = time.time()
-            execution_time = end_time - start_time
-            results.append((algorithm_name, size, execution_time))
-            print(
-                f"Algorithm: {algorithm_name}, File Size: {size}, Execution Time: {execution_time:.4f}s"
-            )
+
+        for reread in [True, False]:
+            for algorithm_name, algorithm_func in algorithms.items():
+                start_time = time.time()
+                search(filename if reread else data, query, algorithm_func, reread)
+                end_time = time.time()
+                execution_time = end_time - start_time
+                results.append((algorithm_name, size, execution_time, reread))
+                print(
+                    f"Algorithm: {algorithm_name}, File Size: {size}, Execution Time: {execution_time:.4f}s, Reread: {reread}"
+                )
 
         os.remove(filename)
 
@@ -309,7 +334,10 @@ def benchmark_search_algorithms() -> List[Tuple[str, int, float]]:
 if __name__ == "__main__":
     benchmark_results = benchmark_search_algorithms()
     with open("benchmark_results.txt", "w") as f:
-        f.write(f"{'Algorithm':<20} {'File Size':<15} {'Execution Time (s)':<20}\n")
-        f.write("=" * 55 + "\n")
+        f.write(
+            f"{'Algorithm':<15}{'File Size':<15}{'Execution Time (s)':<20}{'Reread':<10}\n"
+        )
         for result in benchmark_results:
-            f.write(f"{result[0]:<20} {result[1]:<15} {result[2]:<20.4f}\n")
+            f.write(
+                f"{result[0]:<15}{result[1]:<15}{result[2]:<20.4f}{result[3]:<10}\n"
+            )

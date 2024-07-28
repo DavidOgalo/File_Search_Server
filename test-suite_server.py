@@ -7,6 +7,7 @@ from typing import Generator
 from server import FileSearchServer
 
 # Mock configurations for testing environment
+
 class MockConfig:
     def __init__(
         self, path: str = "./mock_file.txt", reread: bool = True, ssl: bool = True
@@ -26,8 +27,8 @@ def server(tmp_path) -> Generator[FileSearchServer, None, None]:
 
     config = MockConfig(path=str(test_file))
     server = FileSearchServer(host=config.host, port=config.port)
-    
-    # Ensure attributes are present in FileSearchServer 
+
+    # Ensure attributes are present in FileSearchServer
     server.linuxpath = config.linuxpath
     server.reread_on_query = config.reread_on_query
     server.ssl_enabled = config.ssl_enabled

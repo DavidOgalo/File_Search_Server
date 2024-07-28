@@ -26,6 +26,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger()
 
+
 class FileSearchServer:
     def __init__(self, host: str = HOST, port: int = PORT):
         """
@@ -128,7 +129,9 @@ class FileSearchServer:
         self.setup_server()
         while True:
             try:
-                if self.server_socket is not None:  # Add a check to ensure server_socket is not None
+                if (
+                    self.server_socket is not None
+                ):  # Add a check to ensure server_socket is not None
                     client_socket, client_address = self.server_socket.accept()
                     logger.info("Connection from %s", client_address)
                     client_thread = threading.Thread(

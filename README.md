@@ -171,8 +171,13 @@ The following file search algorithms are implemented in this project:
 6. **Z Algorithm**:
    - Computes the Z array which is used for pattern matching in linear time.
 
-## Running the Benchmarks
+## Configuration
 
+The `config.ini` file contains the following setting:
+
+- `REREAD_ON_QUERY`: If set to `True`, the data will be re-read from the file on every query. If `False`, the data will be read once and reused for all queries.
+
+## Running the Benchmarks
 ### Benchmarking Search Algorithms
 
 To benchmark the search algorithms, run the `file-search_algorithms.py` script:
@@ -189,24 +194,25 @@ Once you have the benchmark results, generate the speed report by running the `s
 python speed_report.py
 ```
 
-This will create a visual representation of the benchmark results and save it as `benchmark_chart.png`.
+This will create two visual representations of the benchmark results, for when REREAD_ON_QUERY = True, saved as `benchmark_chart_reread.png` and for when REREAD_ON_QUERY = False, saved as `benchmark_chart_no_reread.png`.
 
 ## Analyzing the Results
 
-The benchmark results are saved in `benchmark_results.txt` and can be visualized using the generated `benchmark_chart.png`. The results include:
+The benchmark results are saved in `benchmark_results.txt` and can be visualized using the generated charts, `benchmark_chart_reread.png` and `benchmark_chart_no_reread.png`. The results include
 
 - Execution time for each algorithm across different file sizes.
-- Comparative performance analysis of all algorithms.
+- Comparative performance analysis of all algorithms with and without re-reading the file.
 
 
 ### Performance Analysis
 
-From the generated chart, key observations include:
+From the generated charts, key observations include:
 - **Naive Search** shows a linear increase in execution time with file size.
 - **Binary Search** performs well for smaller datasets but requires sorted data.
 - **KMP Algorithm** and **Boyer-Moore Algorithm** demonstrate efficient performance for large datasets.
 - **Rabin-Karp Algorithm** is effective for multiple pattern searches but less efficient for very large datasets.
 - **Z Algorithm** outperforms other algorithms with linear time complexity.
+- **Impact of REREAD_ON_QUERY** Analyzing the two charts can help in understanding how re-reading the file impacts the performance of each algorithm
 
 ## Limitations and Recommendations
 
@@ -215,19 +221,22 @@ From the generated chart, key observations include:
 1. **Memory Usage**: Higher memory consumption for certain algorithms (e.g., Rabin-Karp).
 2. **Execution Time**: Inefficiency of Naive Search and Binary Search for large datasets.
 3. **Scalability**: Performance degradation with high concurrency or extremely large datasets.
+4. **File Re-reading Overhead**: Additional overhead when REREAD_ON_QUERY is set to True, which might affect execution time.
 
 ### Recommendations
 
 1. **Use Z Algorithm for Large Datasets**: Implement the Z Algorithm for efficient performance.
 2. **Optimize Memory Usage**: Optimize algorithms to reduce memory consumption.
 3. **Enhance Scalability**: Implement load balancing and optimize server code for better scalability.
-4. **Further Testing**: Conduct additional tests with diverse data and query patterns.
+4. **Assess Impact of REREAD_ON_QUERY**: Choose the REREAD_ON_QUERY setting based on specific use cases to balance between overhead and performance.
+5. **Further Testing**: Conduct additional tests with diverse data and query patterns.
 
 ## Future Enhancements
 
 1. **Advanced Query Options**: Support regex and fuzzy searching.
 2. **Real-Time Analytics**: Monitor server performance and client query statistics in real-time.
 3. **Scalability Improvements**: Explore distributed computing techniques.
+4. **Enhanced Benchmarking**: Incorporate more detailed benchmarking to evaluate the impact of file re-reading and other parameters on performance.
 
 ## Conclusion
 

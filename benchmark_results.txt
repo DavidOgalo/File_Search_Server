@@ -1,44 +1,85 @@
-Algorithm            File Size       Execution Time (s)  
-=======================================================
-naive                10000           0.0015              
-binary               10000           0.0063              
-kmp                  10000           0.0577              
-boyer_moore          10000           0.0065              
-rabin_karp           10000           0.0704              
-z_algorithm          10000           0.0623              
-naive                50000           0.0058              
-binary               50000           0.0330              
-kmp                  50000           0.3378              
-boyer_moore          50000           0.0388              
-rabin_karp           50000           0.3524              
-z_algorithm          50000           0.3269              
-naive                100000          0.0118              
-binary               100000          0.0710              
-kmp                  100000          0.4877              
-boyer_moore          100000          0.0766              
-rabin_karp           100000          0.6200              
-z_algorithm          100000          0.5539              
-naive                250000          0.0292              
-binary               250000          0.1810              
-kmp                  250000          1.1811              
-boyer_moore          250000          0.1627              
-rabin_karp           250000          1.4593              
-z_algorithm          250000          1.3726              
-naive                500000          0.0553              
-binary               500000          0.3962              
-kmp                  500000          2.4168              
-boyer_moore          500000          0.2952              
-rabin_karp           500000          2.8474              
-z_algorithm          500000          2.7062              
-naive                750000          0.0865              
-binary               750000          0.6381              
-kmp                  750000          3.4383              
-boyer_moore          750000          0.4446              
-rabin_karp           750000          4.1896              
-z_algorithm          750000          4.1325              
-naive                1000000         0.1089              
-binary               1000000         0.8724              
-kmp                  1000000         4.6410              
-boyer_moore          1000000         0.5715              
-rabin_karp           1000000         5.5958              
-z_algorithm          1000000         5.8480              
+Algorithm      File Size      Execution Time (s)  Reread    
+naive          10000          0.0024              1         
+binary         10000          0.0053              1         
+kmp            10000          0.0584              1         
+boyer_moore    10000          0.0079              1         
+rabin_karp     10000          0.0757              1         
+z_algorithm    10000          0.0738              1         
+naive          10000          0.0015              0         
+binary         10000          0.0041              0         
+kmp            10000          0.0597              0         
+boyer_moore    10000          0.0066              0         
+rabin_karp     10000          0.0779              0         
+z_algorithm    10000          0.0642              0         
+naive          50000          0.0115              1         
+binary         50000          0.0417              1         
+kmp            50000          0.2511              1         
+boyer_moore    50000          0.0396              1         
+rabin_karp     50000          0.3440              1         
+z_algorithm    50000          0.3310              1         
+naive          50000          0.0064              0         
+binary         50000          0.0365              0         
+kmp            50000          0.2881              0         
+boyer_moore    50000          0.0474              0         
+rabin_karp     50000          0.3158              0         
+z_algorithm    50000          0.3188              0         
+naive          100000         0.0236              1         
+binary         100000         0.0854              1         
+kmp            100000         0.4987              1         
+boyer_moore    100000         0.0813              1         
+rabin_karp     100000         0.6377              1         
+z_algorithm    100000         0.5872              1         
+naive          100000         0.0172              0         
+binary         100000         0.0751              0         
+kmp            100000         0.4883              0         
+boyer_moore    100000         0.0702              0         
+rabin_karp     100000         0.6177              0         
+z_algorithm    100000         0.5968              0         
+naive          250000         0.0656              1         
+binary         250000         0.2217              1         
+kmp            250000         1.2257              1         
+boyer_moore    250000         0.1858              1         
+rabin_karp     250000         1.4624              1         
+z_algorithm    250000         1.4577              1         
+naive          250000         0.0267              0         
+binary         250000         0.1937              0         
+kmp            250000         1.1476              0         
+boyer_moore    250000         0.1529              0         
+rabin_karp     250000         1.4427              0         
+z_algorithm    250000         1.4047              0         
+naive          500000         0.1021              1         
+binary         500000         0.4475              1         
+kmp            500000         2.4447              1         
+boyer_moore    500000         0.3655              1         
+rabin_karp     500000         2.9233              1         
+z_algorithm    500000         2.7827              1         
+naive          500000         0.0506              0         
+binary         500000         0.3725              0         
+kmp            500000         2.3038              0         
+boyer_moore    500000         0.2927              0         
+rabin_karp     500000         2.9324              0         
+z_algorithm    500000         2.7602              0         
+naive          750000         0.1512              1         
+binary         750000         0.7034              1         
+kmp            750000         3.6295              1         
+boyer_moore    750000         0.5468              1         
+rabin_karp     750000         4.3192              1         
+z_algorithm    750000         4.2235              1         
+naive          750000         0.0726              0         
+binary         750000         0.6130              0         
+kmp            750000         3.4301              0         
+boyer_moore    750000         0.4395              0         
+rabin_karp     750000         4.2411              0         
+z_algorithm    750000         4.0433              0         
+naive          1000000        0.2066              1         
+binary         1000000        1.0230              1         
+kmp            1000000        4.7483              1         
+boyer_moore    1000000        0.7203              1         
+rabin_karp     1000000        6.0667              1         
+z_algorithm    1000000        5.5658              1         
+naive          1000000        0.0915              0         
+binary         1000000        0.8264              0         
+kmp            1000000        4.5862              0         
+boyer_moore    1000000        0.5807              0         
+rabin_karp     1000000        5.8689              0         
+z_algorithm    1000000        5.4555              0         
