@@ -3,7 +3,7 @@ import random
 import string
 import os
 import configparser
-from typing import List, Callable, Tuple
+from typing import List, Callable, Tuple, cast, Union
 
 # Read the configuration
 config = configparser.ConfigParser()
@@ -278,14 +278,20 @@ def generate_test_file(filename: str, num_lines: int) -> None:
 
 
 def search(
-    data: List[str],
+    # Can be either a list of strings or a filename
+    data: Union[List[str], str],
     query: str,
     algorithm: Callable[[List[str], str], List[str]],
     reread: bool = False,
 ) -> List[str]:
     if reread:
-        with open(data, "r") as file:
-            data = file.readlines()
+        if isinstance(data, str):  # Ensure data is treated as filename when rereading
+            with open(data, "r") as file:
+                data = file.readlines()
+        else:
+            raise TypeError("Expected filename as a string when rereading.")
+    elif not isinstance(data, list):
+        raise TypeError("Expected data to be a list of strings.")
     return algorithm(data, query)
 
 
@@ -318,7 +324,12 @@ def benchmark_search_algorithms() -> List[Tuple[str, int, float, bool]]:
         for reread in [True, False]:
             for algorithm_name, algorithm_func in algorithms.items():
                 start_time = time.time()
-                search(filename if reread else data, query, algorithm_func, reread)
+                search(
+                    filename if reread else cast(List[str], data),
+                    query,
+                    algorithm_func,
+                    reread,
+                )
                 end_time = time.time()
                 execution_time = end_time - start_time
                 results.append((algorithm_name, size, execution_time, reread))

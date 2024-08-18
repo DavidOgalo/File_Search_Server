@@ -2,6 +2,7 @@ import socket
 import ssl
 import configparser
 import logging
+import time
 from typing import Optional
 
 # Load configuration settings
@@ -60,6 +61,8 @@ class FileSearchClient:
 
         try:
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            start_time = time.time()  # Start timing
+
             if self.ssl_enabled and self.ssl_context:
                 with self.ssl_context.wrap_socket(
                     client_socket, server_hostname=self.host
@@ -69,14 +72,17 @@ class FileSearchClient:
                     ssl_socket.sendall(query.encode("utf-8"))
                     response = ssl_socket.recv(1024).decode("utf-8")
                     logger.info("Received response: %s", response)
-                    return response
             else:
                 client_socket.connect((self.host, self.port))
                 logger.info("Connected to server at %s:%d", self.host, self.port)
                 client_socket.sendall(query.encode("utf-8"))
                 response = client_socket.recv(1024).decode("utf-8")
                 logger.info("Received response: %s", response)
-                return response
+
+            end_time = time.time()  # End timing
+            execution_time = end_time - start_time
+            logger.info("Query execution time: %.4f seconds", execution_time)
+            return response
         except Exception as e:
             logger.error("Error communicating with server: %s", e)
             return "ERROR: Communication failed\n"

@@ -1,10 +1,11 @@
+import os
 import socket
 import threading
 import configparser
 import ssl
 import logging
 import time
-from typing import List, Optional
+from typing import Optional
 
 # Load configuration settings
 config = configparser.ConfigParser()
@@ -28,7 +29,7 @@ logger = logging.getLogger()
 
 
 class FileSearchServer:
-    def __init__(self, host: str = HOST, port: int = PORT):
+    def __init__(self, host: str = HOST, port: int = PORT) -> None:
         """
         Initialize the FileSearchServer.
 
@@ -39,6 +40,13 @@ class FileSearchServer:
         self.port = port
         self.server_socket: Optional[socket.socket] = None
         self.ssl_context: Optional[ssl.SSLContext] = None
+        self.linuxpath: str = linuxpath  # Initialize linuxpath
+        self.reread_on_query: bool = reread_on_query  # Initialize reread_on_query
+        self.ssl_enabled: bool = SSL_ENABLED  # Initialize ssl_enabled
+        self.data = (
+            None  # Will hold the file content in memory if REREAD_ON_QUERY is False
+        )
+        self.file_mtime = None  # To track file modification time
 
     def setup_server(self) -> None:
         """Set up the server socket and SSL context if enabled."""
@@ -47,7 +55,7 @@ class FileSearchServer:
         self.server_socket.listen(5)
         logger.info("Server listening on %s:%d", self.host, self.port)
 
-        if SSL_ENABLED:
+        if self.ssl_enabled:
             self.ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
             self.ssl_context.load_cert_chain(
                 certfile="server.crt", keyfile="server.key"
@@ -104,13 +112,18 @@ class FileSearchServer:
         :return: The result of the search.
         """
         try:
-            if reread_on_query:
-                with open(linuxpath, "r") as file:
+            if self.reread_on_query:
+                logger.info("Re-reading file for each query")
+                with open(self.linuxpath, "r") as file:
                     data = file.readlines()
             else:
-                if not hasattr(self, "data"):
-                    with open(linuxpath, "r") as file:
+                # If REREAD_ON_QUERY is False, cache the file data in memory
+                current_mtime = self.get_file_mtime(self.linuxpath)
+                if self.data is None or self.file_mtime != current_mtime:
+                    logger.info("Loading data into memory or file changed")
+                    with open(self.linuxpath, "r") as file:
                         self.data = file.readlines()
+                    self.file_mtime = current_mtime
                 data = self.data
 
             query = query.strip()
@@ -118,11 +131,19 @@ class FileSearchServer:
 
             return "STRING EXISTS" if results else "STRING NOT FOUND"
         except FileNotFoundError:
-            logger.error("File not found: %s", linuxpath)
+            logger.error("File not found: %s", self.linuxpath)
             return "STRING NOT FOUND"
         except Exception as e:
             logger.error("Error processing query: %s", e)
             return "ERROR: Internal server error"
+
+    def get_file_mtime(self, filepath: str) -> float:
+        """Get the last modification time of the file."""
+        try:
+            return os.path.getmtime(filepath)
+        except Exception as e:
+            logger.error("Error getting file modification time: %s", e)
+            return 0.0
 
     def start(self) -> None:
         """Start the server and handle clients."""

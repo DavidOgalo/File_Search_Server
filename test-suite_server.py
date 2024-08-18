@@ -6,8 +6,8 @@ import time
 from typing import Generator
 from server import FileSearchServer
 
-# Mock configurations for testing environment
 
+# Mock configurations for testing environment
 class MockConfig:
     def __init__(
         self, path: str = "./mock_file.txt", reread: bool = True, ssl: bool = True
@@ -94,7 +94,7 @@ def test_string_exists(server: FileSearchServer, client: socket.socket) -> None:
     """Test sending a query that matches a string in the file."""
     try:
         wrapped_client = ssl_wrap_socket(client)
-        wrapped_client.sendall(b"24;0;1;26;0;8;4;0;\n")
+        wrapped_client.sendall(b"teststring\n")
         response = wrapped_client.recv(1024).decode("utf-8")
         assert response.strip() == "STRING EXISTS"
     except (ConnectionError, BrokenPipeError, ssl.SSLError) as e:
@@ -106,7 +106,7 @@ def test_file_not_found(server: FileSearchServer, client: socket.socket) -> None
     try:
         server.linuxpath = "/path/to/non_existent_file.txt"
         wrapped_client = ssl_wrap_socket(client)
-        wrapped_client.sendall(b"teststring\n")
+        wrapped_client.sendall(b"teststring")
         response = wrapped_client.recv(1024).decode("utf-8")
         assert response.strip() == "STRING NOT FOUND"
     except (ConnectionError, BrokenPipeError, ssl.SSLError) as e:
@@ -119,7 +119,7 @@ def test_client_disconnection_handling(
     """Test the server's handling of a client disconnection."""
     try:
         wrapped_client = ssl_wrap_socket(client)
-        wrapped_client.sendall(b"teststring\n")
+        wrapped_client.sendall(b"teststring")
         wrapped_client.close()
         time.sleep(1)  # Allow time for the server to handle disconnection
     except (ConnectionError, BrokenPipeError, ssl.SSLError) as e:
@@ -130,6 +130,13 @@ def test_multiple_concurrent_clients(server: FileSearchServer) -> None:
     """Test handling multiple concurrent clients."""
     num_clients = 5
     clients = []
+
+    def send_query(client_socket: socket.socket) -> None:
+        """Helper function to send a query from a client socket."""
+        wrapped_client = ssl_wrap_socket(client_socket)
+        wrapped_client.sendall(b"19;0;1;28;0;7;4;0;\n")
+        response = wrapped_client.recv(1024).decode("utf-8")
+        assert response.strip() == "STRING EXISTS"
 
     try:
         for _ in range(num_clients):
@@ -151,14 +158,6 @@ def test_multiple_concurrent_clients(server: FileSearchServer) -> None:
     finally:
         for client_socket in clients:
             client_socket.close()
-
-
-def send_query(client_socket: socket.socket) -> None:
-    """Helper function to send a query from a client socket."""
-    wrapped_client = ssl_wrap_socket(client_socket)
-    wrapped_client.sendall(b"19;0;1;28;0;7;4;0;\n")
-    response = wrapped_client.recv(1024).decode("utf-8")
-    assert response.strip() == "STRING EXISTS"
 
 
 def test_query_timeout_handling(
