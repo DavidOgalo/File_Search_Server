@@ -5,7 +5,7 @@ import configparser
 import ssl
 import logging
 import time
-from typing import Optional
+from typing import Optional, List
 
 # Load configuration settings
 config = configparser.ConfigParser()
@@ -27,7 +27,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger()
 
-
 class FileSearchServer:
     def __init__(self, host: str = HOST, port: int = PORT) -> None:
         """
@@ -43,10 +42,8 @@ class FileSearchServer:
         self.linuxpath: str = linuxpath  # Initialize linuxpath
         self.reread_on_query: bool = reread_on_query  # Initialize reread_on_query
         self.ssl_enabled: bool = SSL_ENABLED  # Initialize ssl_enabled
-        self.data = (
-            None  # Will hold the file content in memory if REREAD_ON_QUERY is False
-        )
-        self.file_mtime = None  # To track file modification time
+        self.data: Optional[List[str]] = None   # Will hold the file content in memory if REREAD_ON_QUERY is False
+        self.file_mtime: Optional[float] = None  # To track file modification time
 
     def setup_server(self) -> None:
         """Set up the server socket and SSL context if enabled."""
@@ -154,7 +151,7 @@ class FileSearchServer:
                     self.server_socket is not None
                 ):  # Add a check to ensure server_socket is not None
                     client_socket, client_address = self.server_socket.accept()
-                    logger.info("Connection from %s", client_address)
+                    logger.info("Connection from %s", client_address)   
                     client_thread = threading.Thread(
                         target=self.handle_client, args=(client_socket,)
                     )
@@ -165,7 +162,6 @@ class FileSearchServer:
             except Exception as e:
                 logger.error("Error accepting connections: %s", e)
                 break
-
 
 if __name__ == "__main__":
     server = FileSearchServer()
