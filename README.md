@@ -1,8 +1,8 @@
-# AS_IntroductoryTask
+# File_Search_Server
 
 ## Overview
 
-The `AS_IntroductoryTask` is a project designed to implement and benchmark various file search algorithms to efficiently search for strings within large text files. This README provides a comprehensive guide to the project, including setup instructions, detailed descriptions of the implemented algorithms, how to run the benchmarks, and how to interpret the results.
+The `File_Search_Server` is a project designed to implement and benchmark various file search algorithms to efficiently search for strings within large text files. This README provides a comprehensive guide to the project, including setup instructions, detailed descriptions of the implemented algorithms, how to run the benchmarks, and how to interpret the results.
 
 ## Table of Contents
 
@@ -24,7 +24,7 @@ The `AS_IntroductoryTask` is a project designed to implement and benchmark vario
 The project is organized into the following directories and files:
 
 
-AS_IntroductoryTask/
+File_Search_Server/
 │
 ├── README.md
 ├── requirements.txt
@@ -75,11 +75,11 @@ python client.py
 ```
 ## Running as a Linux Service
 
-To run the AS_IntroductoryTask as a Linux daemon or service, follow these steps:
+To run the File_Search_Server as a Linux daemon or service, follow these steps:
 
 1. Create a systemd service file:
 ```sh
-sudo nano /etc/systemd/system/as_introductorytask.service
+sudo nano /etc/systemd/system/File_Search_Server.service
  ```
 
 2. Add the following content to the service file:
@@ -90,15 +90,15 @@ After=network.target
 
 [Service]
 User=yourusername
-WorkingDirectory=/path/to/AS_IntroductoryTask
-ExecStart=/usr/bin/python3 /path/to/AS_IntroductoryTask/server.py
+WorkingDirectory=/path/to/File_Search_Server
+ExecStart=/usr/bin/python3 /path/to/File_Search_Server/server.py
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
  ```
 
-Replace /path/to/AS_IntroductoryTask with the actual path to the project directory and yourusername with your Linux username.
+Replace /path/to/File_Search_Server with the actual path to the project directory and yourusername with your Linux username.
 
 3. Reload the systemd daemon to recognize the new service:
  ```sh
@@ -106,32 +106,32 @@ sudo systemctl daemon-reload
  ```
 4. Start the service:
  ```sh
-sudo systemctl start as_introductorytask.service
+sudo systemctl start File_Search_Server.service
  ```
 5. Enable the service to start on boot:
  ```sh
-sudo systemctl enable as_introductorytask.service
+sudo systemctl enable File_Search_Server.service
  ```
 6. Check the status of the service:
  ```sh
-sudo systemctl status as_introductorytask.service
+sudo systemctl status File_Search_Server.service
  ```
 
-The AS_IntroductoryTask should now be running as a Linux service. 
+The File_Search_Server should now be running as a Linux service. 
 
 You can stop the service with 
  ```sh
-sudo systemctl stop as_introductorytask.service
+sudo systemctl stop File_Search_Server.service
  ```
  and restart it with 
   ```sh
- sudo systemctl restart as_introductorytask.service
+ sudo systemctl restart File_Search_Server.service
  ```
  
 7. Querying the server:
 Navigate to the project directory where the client.py script is located:
  ```sh
-cd /path/to/AS_IntroductoryTask
+cd /path/to/File_Search_Server
  ```
  8. Run the client script:
  ```sh
@@ -240,4 +240,4 @@ From the generated charts, key observations include:
 
 ## Conclusion
 
-The `AS_IntroductoryTask` project provides an efficient solution for searching strings in large text files. By benchmarking various algorithms, we have identified the most suitable algorithm for different scenarios. The project offers a robust framework for further enhancements and optimizations.
+The `File_Search_Server` project provides an efficient solution for searching strings in large text files. By benchmarking various algorithms, we have identified the most suitable algorithm for different scenarios. The project offers a robust framework for further enhancements and optimizations.
